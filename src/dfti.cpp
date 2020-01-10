@@ -25,6 +25,7 @@ dfti::dfti()
 
 void dfti::dataCallback(const dfti2::dftiData::ConstPtr& msg)
 {
+
   system(("echo \""+std::to_string(ID_)+","+msg->type+","+std::to_string(msg->header.stamp.toSec())+","+std::to_string(msg->data)+"\" >> " + logName_).c_str());
   ID_++;
 }
