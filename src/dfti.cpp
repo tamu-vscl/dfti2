@@ -16,9 +16,10 @@ dfti::dfti()
   logName_ = format("~/DFTI_ "+std::string(std::ctime(&currentTime2))+".csv");
   // std::cout << logName_;
   // system(("echo \"" + logName_ + "\"").c_str());
-  system(("touch " + logName_).c_str());
-  system(("echo \"ID,type,time,data\" >> " + logName_).c_str());
-
+  // system(("touch " + logName_).c_str());
+  // system(("echo \"ID,type,time,data\" >> " + logName_).c_str());
+  logFile_.open(logName_);
+  logFile_ << "ID,type,time,data\n";
   sub_ = nh_.subscribe("dfti_data", 1000, &dfti::dataCallback, this);
   ROS_INFO("DFTI READY: now logging data.");
 
@@ -30,8 +31,8 @@ void dfti::dataCallback(const dfti2::dftiData::ConstPtr& msg)
 
   start_ = ros::WallTime::now();
 
-  system(("echo \""+std::to_string(ID_)+","+msg->type+","+std::to_string((double)msg->header.stamp.sec+((double)msg->header.stamp.nsec)/1000000000.0)+","+std::to_string(msg->data)+"\" >> " + logName_).c_str());
-
+  // system(("echo \""+std::to_string(ID_)+","+msg->type+","+std::to_string((double)msg->header.stamp.sec+((double)msg->header.stamp.nsec)/1000000000.0)+","+std::to_string(msg->data)+"\" >> " + logName_).c_str());
+  logFile_ << ID_ << "," << msg->type << "," << ((double)msg->header.stamp.sec+((double)msg->header.stamp.nsec)/1000000000.0) << "," << msg->data << "\n";
   ID_++;
 
   end_ = ros::WallTime::now();

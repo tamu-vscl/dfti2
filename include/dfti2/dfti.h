@@ -2,6 +2,7 @@
 #define DFTI_HEADER_FILE
 
 #include <iostream>
+#include <fstream>
 
 #include "ros/ros.h"
 #include <dfti2/dftiData.h>
@@ -19,6 +20,7 @@ public:
 private:
   ros::NodeHandle nh_;
   std::string logName_;
+  std::ofstream logFile_;
   unsigned long long int ID_ = 1;
   void dataCallback(const dfti2::dftiData::ConstPtr& msg);
   ros::Subscriber sub_;
