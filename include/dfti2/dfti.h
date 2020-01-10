@@ -6,6 +6,7 @@
 #include "ros/ros.h"
 #include <dfti2/dftiData.h>
 
+#include <cmath>
 #include <stdlib.h>
 #include <chrono>
 #include <ctime>

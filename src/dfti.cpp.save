@@ -16,9 +16,11 @@ dfti::dfti()
   logName_ = format("~/DFTI_ "+std::string(std::ctime(&currentTime2))+".csv");
   // std::cout << logName_;
   // system(("echo \"" + logName_ + "\"").c_str());
-  system(("touch " + logName_).c_str());
-  system(("echo \"ID,type,time,data\" >> " + logName_).c_str());
-
+  // system(("touch " + logName_).c_str());
+  // system(("echo \"ID,type,time,data\" >> " + logName_).c_str());
+  
+  logFile.open(logName_);
+  
   sub_ = nh_.subscribe("dfti_data", 1000, &dfti::dataCallback, this);
   ROS_INFO("DFTI READY: now logging data.");
 
