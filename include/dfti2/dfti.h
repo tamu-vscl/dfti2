@@ -17,10 +17,10 @@ class dfti
 {
 public:
   dfti();
+  std::ofstream logFile_;
 private:
   ros::NodeHandle nh_;
   std::string logName_;
-  std::ofstream logFile_;
   unsigned long long int ID_ = 1;
   void dataCallback(const dfti2::dftiData::ConstPtr& msg);
   ros::Subscriber sub_;

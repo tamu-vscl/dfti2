@@ -6,6 +6,7 @@ int main (int argc, char **argv)
   ros::init(argc, argv, "dfti");
   dfti dfti_node;
   ros::spin();
+  dfti_node.logFile_.close();
 }
 
 
@@ -13,11 +14,12 @@ dfti::dfti()
 {
   auto currentTime = std::chrono::system_clock::now();
   std::time_t currentTime2 = std::chrono::system_clock::to_time_t(currentTime);
-  logName_ = format("~/DFTI_ "+std::string(std::ctime(&currentTime2))+".csv");
+  logName_ = format("/home/vscl-2/DFTI_ "+std::string(std::ctime(&currentTime2))+".csv");
   // std::cout << logName_;
   // system(("echo \"" + logName_ + "\"").c_str());
   // system(("touch " + logName_).c_str());
   // system(("echo \"ID,type,time,data\" >> " + logName_).c_str());
+  ROS_INFO("Creating DFTI log file: %s",logName_.c_str());
   logFile_.open(logName_);
   logFile_ << "ID,type,time,data\n";
   sub_ = nh_.subscribe("dfti_data", 1000, &dfti::dataCallback, this);
