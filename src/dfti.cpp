@@ -14,13 +14,14 @@ dfti::dfti()
 {
   auto currentTime = std::chrono::system_clock::now();
   std::time_t currentTime2 = std::chrono::system_clock::to_time_t(currentTime);
-  logName_ = format("/home/vscl-2/DFTI_ "+std::string(std::ctime(&currentTime2))+".csv");
+  logName_ = format("/home/lidar-op/DFTI_"+std::string(std::ctime(&currentTime2))+".csv");
   // std::cout << logName_;
   // system(("echo \"" + logName_ + "\"").c_str());
   // system(("touch " + logName_).c_str());
   // system(("echo \"ID,type,time,data\" >> " + logName_).c_str());
   ROS_INFO("Creating DFTI log file: %s",logName_.c_str());
   logFile_.open(logName_);
+  logFile_ << std::fixed;
   logFile_ << "ID,type,time,data\n";
   sub_ = nh_.subscribe("dfti_data", 1000, &dfti::dataCallback, this);
   ROS_INFO("DFTI READY: now logging data.");
@@ -29,18 +30,18 @@ dfti::dfti()
 
 void dfti::dataCallback(const dfti2::dftiData::ConstPtr& msg)
 {
-  ros::WallTime start_, end_;
+  // ros::WallTime start_, end_;
 
-  start_ = ros::WallTime::now();
+  // start_ = ros::WallTime::now();
 
   // system(("echo \""+std::to_string(ID_)+","+msg->type+","+std::to_string((double)msg->header.stamp.sec+((double)msg->header.stamp.nsec)/1000000000.0)+","+std::to_string(msg->data)+"\" >> " + logName_).c_str());
   logFile_ << ID_ << "," << msg->type << "," << ((double)msg->header.stamp.sec+((double)msg->header.stamp.nsec)/1000000000.0) << "," << msg->data << "\n";
   ID_++;
 
-  end_ = ros::WallTime::now();
+  // end_ = ros::WallTime::now();
 
-  double execution_time = (end_ - start_).toNSec() * 1e-6;
-  ROS_INFO_STREAM("Execution time (ms): " << execution_time);
+  // double execution_time = (end_ - start_).toNSec() * 1e-6;
+  // ROS_INFO_STREAM("Execution time (ms): " << execution_time);
   // ROS_INFO("%s",.c_str());
 }
 
