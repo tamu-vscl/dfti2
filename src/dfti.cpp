@@ -14,7 +14,7 @@ dfti::dfti()
 {
   auto currentTime = std::chrono::system_clock::now();
   std::time_t currentTime2 = std::chrono::system_clock::to_time_t(currentTime);
-  logName_ = format("/home/vscl/DFTI_ "+std::string(std::ctime(&currentTime2))+".csv");
+  logName_ = format("/home/vscl-2/DFTI_ "+std::string(std::ctime(&currentTime2))+".csv");
   // std::cout << logName_;
   // system(("echo \"" + logName_ + "\"").c_str());
   // system(("touch " + logName_).c_str());

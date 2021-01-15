@@ -35,3 +35,7 @@ include_directories(
 add_executable(dfti src/dfti.cpp)
 target_link_libraries(dfti ${catkin_LIBRARIES})
 add_dependencies(dfti ${catkin_EXPORTED_TARGETS})
+
+catkin_install_python(PROGRAMS src/arduino_sensors.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+) 
