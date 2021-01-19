@@ -36,6 +36,10 @@ add_executable(dfti src/dfti.cpp)
 target_link_libraries(dfti ${catkin_LIBRARIES})
 add_dependencies(dfti ${catkin_EXPORTED_TARGETS})
 
+add_executable(data_reformater src/data_reformater.cpp)
+target_link_libraries(data_reformater ${catkin_LIBRARIES})
+add_dependencies(data_reformater ${catkin_EXPORTED_TARGETS})
+
 catkin_install_python(PROGRAMS src/arduino_sensors.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-) 
+)
