@@ -12,7 +12,7 @@ stream_rate = 100
 
 
 dfti_data_pub = rospy.Publisher('dfti_data',dftiData,queue_size=1000)
-rospy.init_node('arduino_sensors')
+rospy.init_node('arduino_publisher')
 msg = dftiData()
 
 

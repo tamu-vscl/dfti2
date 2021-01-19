@@ -3,10 +3,10 @@
 #include "nav_msgs/Odometry.h"
 #include "mavros_msgs/RCOut.h"
 
-class data_reformater_node
+class pixhawk_publisher_node
 {
   public:
-    data_reformater_node();
+    pixhawk_publisher_node();
   private:
     ros::NodeHandle n;
     ros::Subscriber odom_sub;
@@ -19,20 +19,20 @@ class data_reformater_node
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "da<build_depend>dfti2</build_depend>ta_reformater");
-  data_reformater_node start;
+  ros::init(argc, argv, "pixhawk_publisher");
+  pixhawk_publisher_node start;
   ros::spin();
   return 0;
 }
 
-data_reformater_node::data_reformater_node()
+pixhawk_publisher_node::pixhawk_publisher_node()
 {
   data_pub = n.advertise<dfti2::dftiData>("dfti_data",1000);
-  odom_sub = n.subscribe("/mavros/local_position/odom",1000,&data_reformater_node::odomCallback,this);
-  rc_sub = n.subscribe("/mavros/rc/out",1000,&data_reformater_node::rcCallback,this);
+  odom_sub = n.subscribe("/mavros/local_position/odom",1000,&pixhawk_publisher_node::odomCallback,this);
+  rc_sub = n.subscribe("/mavros/rc/out",1000,&pixhawk_publisher_node::rcCallback,this);
 }
 
-void data_reformater_node::odomCallback(const nav_msgs::Odometry::ConstPtr& in_msg)
+void pixhawk_publisher_node::odomCallback(const nav_msgs::Odometry::ConstPtr& in_msg)
 {
   dfti2::dftiData out_msg;
   out_msg.header = in_msg->header;
@@ -81,7 +81,7 @@ void data_reformater_node::odomCallback(const nav_msgs::Odometry::ConstPtr& in_m
   data_pub.publish(out_msg);
 }
 
-void data_reformater_node::rcCallback(const mavros_msgs::RCOut::ConstPtr& in_msg)
+void pixhawk_publisher_node::rcCallback(const mavros_msgs::RCOut::ConstPtr& in_msg)
 {
   dfti2::dftiData out_msg;
   out_msg.header = in_msg->header;

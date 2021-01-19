@@ -1,5 +1,5 @@
 
-# data_importer.m
+# pixhawk_publisher.m
 This ros node reformats data from Ardupilot into the format needed for data logging on DFTI 2.
 
 More specifically it does rotations into Forward Right Down format and passes on one data point at a time.
