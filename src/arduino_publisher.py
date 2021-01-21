@@ -5,7 +5,7 @@ from dfti2.msg import dftiData
 
 MOTOR = 0
 SERVO = 1
-
+# TODO import from param
 sensors = [{"pin":7, "name":"M","type":MOTOR,"state":-1}]
            #{"pin":59,"name":"S","type":SERVO,"state":-1}]
 stream_rate = 100
@@ -48,18 +48,18 @@ if ready == "a":
     ready = arduino.readline()[:-2]
     if ready == "b":
         while not rospy.is_shutdown():
-            # ready = arduino.readline()[:-2]
-            # if ready == "c":
-            msg.header.stamp = rospy.Time.now()
-            # arduino.write(str(1).encode('utf-8'))
-            for sensor in sensors:
-                sensor["state"] = float(arduino.readline()[:-2])
-                if not sensor["state"] == 0:
-                    msg.type = sensor["name"]
-                    msg.data = sensor["state"]
-                    dfti_data_pub.publish(msg)
-            # else:
-            #     print(ready)
+            ready = arduino.readline()[:-2]
+            if ready == "c":
+                msg.header.stamp = rospy.Time.now()
+                # arduino.write(str(1).encode('utf-8'))
+                for sensor in sensors:
+                    sensor["state"] = float(arduino.readline()[:-2])
+                    if not sensor["state"] == 0:
+                        msg.type = sensor["name"]
+                        msg.data = sensor["state"]
+                        dfti_data_pub.publish(msg)
+            else:
+                print(ready)
     else:
         print(ready)
 else:
