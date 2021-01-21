@@ -4,6 +4,7 @@
 #include "mavros_msgs/VFR_HUD.h"
 #include "mavros_msgs/RCIn.h"
 #include "mavros_msgs/RCOut.h"
+#include <vector>
 
 class pixhawk_publisher_node
 {
@@ -12,8 +13,11 @@ class pixhawk_publisher_node
   private:
     ros::NodeHandle n;
     ros::Subscriber odom_sub;
-    ros::Subscriber rc_sub;
+    ros::Subscriber rcin_sub;
+    ros::Subscriber rcout_sub;
     ros::Publisher data_pub;
+    vector<unsigned short int> in_pins_to_pub;
+    vector<unsigned short int> out_pins_to_pub;
 
     void odomCallback(const nav_msgs::Odometry::ConstPtr& in_msg);
     void airspeedCallback(const mavros_msgs::VFR_HUD::ConstPtr& in_msg);
@@ -36,6 +40,9 @@ pixhawk_publisher_node::pixhawk_publisher_node()
   airspeed_sub = n.subscribe("/mavros/vfr_hud",1000,&pixhawk_publisher_node::airspeedCallback,this);
   rcin_sub = n.subscribe("/mavros/rc/in",1000,&pixhawk_publisher_node::rcinCallback,this);
   rcout_sub = n.subscribe("/mavros/rc/out",1000,&pixhawk_publisher_node::rcoutCallback,this);
+
+  n.getParam("in_pins_to_pub", in_pins_to_pub)
+  n.getParam("out_pins_to_pub", out_pins_to_pub)
 }
 
 void pixhawk_publisher_node::odomCallback(const nav_msgs::Odometry::ConstPtr& in_msg)
@@ -100,10 +107,10 @@ void pixhawk_publisher_node::rcinCallback(const mavros_msgs::RCOut::ConstPtr& in
 {
   dfti2::dftiData out_msg;
   out_msg.header = in_msg->header;
-  for(int i = 0; i<8; i++)
+  for(int i = 0; i<in_pins_to_pub.size(); i++)
   {
-    out_msg.type = "I" + std::to_string(i+1);
-    out_msg.data = in_msg->channels[i];
+    out_msg.type = "I" + std::to_string(in_pins_to_pub[i]));
+    out_msg.data = in_msg->channels[in_pins_to_pub[i])-1];
     data_pub.publish(out_msg);
   }
 }
@@ -112,10 +119,10 @@ void pixhawk_publisher_node::rcoutCallback(const mavros_msgs::RCOut::ConstPtr& i
 {
   dfti2::dftiData out_msg;
   out_msg.header = in_msg->header;
-  for(int i = 0; i<8; i++)
+  for(int i = 0; i<out_pins_to_pub.size(); i++)
   {
-    out_msg.type = "O" + std::to_string(i+1);
-    out_msg.data = in_msg->channels[i];
+    out_msg.type = "O" + std::to_string(out_pins_to_pub[i]);
+    out_msg.data = in_msg->channels[out_pins_to_pub[i])-1];
     data_pub.publish(out_msg);
   }
 }

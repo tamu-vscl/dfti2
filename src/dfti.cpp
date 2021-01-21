@@ -1,5 +1,8 @@
 #include <ros/ros.h>
 #include <dfti2/dfti.h>
+#include <string>
+#include <vector>
+#include <filesystem>
 
 int main (int argc, char **argv)
 {
@@ -12,44 +15,27 @@ int main (int argc, char **argv)
 
 dfti::dfti()
 {
-  auto currentTime = std::chrono::system_clock::now();
-  std::time_t currentTime2 = std::chrono::system_clock::to_time_t(currentTime);
-  logName_ = format("/home/vscl-2/DFTI_ "+std::string(std::ctime(&currentTime2))+".csv");
-  // std::cout << logName_;
-  // system(("echo \"" + logName_ + "\"").c_str());
-  // system(("touch " + logName_).c_str());
-  // system(("echo \"ID,type,time,data\" >> " + logName_).c_str());
+  // Where to store files
+  std::string path = "../data";
+
+  // Find old files so we don't overwrite them
+  vector<int> old_files;
+  for (const auto & entry : fs::directory_iterator(path)) old_files.push_back(entry.path().stem());
+  int file_count = 1;
+  while(std::find(old_files.begin(), old_files.end(), file_count) == old_files.end()) file_count++;
+  logName_ = format(path + "/DFTI_run_ " + std::string(file_count) + ".csv");
+
+  // Create file
   ROS_INFO("Creating DFTI log file: %s",logName_.c_str());
   logFile_.open(logName_);
   logFile_ << std::fixed;
   logFile_ << "ID,type,time,data\n";
   sub_ = nh_.subscribe("dfti_data", 1000, &dfti::dataCallback, this);
-  ROS_INFO("DFTI READY: now logging data.");
-
+  ROS_INFO("DFTI READY: Now logging data.");
 }
 
 void dfti::dataCallback(const dfti2::dftiData::ConstPtr& msg)
 {
-  // ros::WallTime start_, end_;
-
-  // start_ = ros::WallTime::now();
-
-  // system(("echo \""+std::to_string(ID_)+","+msg->type+","+std::to_string((double)msg->header.stamp.sec+((double)msg->header.stamp.nsec)/1000000000.0)+","+std::to_string(msg->data)+"\" >> " + logName_).c_str());
   logFile_ << ID_ << "," << msg->type << "," << ((double)msg->header.stamp.sec+((double)msg->header.stamp.nsec)/1000000000.0) << "," << msg->data << "\n";
   ID_++;
-
-  // end_ = ros::WallTime::now();
-
-  // double execution_time = (end_ - start_).toNSec() * 1e-6;
-  // ROS_INFO_STREAM("Execution time (ms): " << execution_time);
-  // ROS_INFO("%s",.c_str());
-}
-
-// Function to remove all spaces from a given string
-std::string format(std::string str)
-{
-    str.erase(remove(str.begin(), str.end(), ' '), str.end());
-    str.erase(remove(str.begin(), str.end(), ':'), str.end());
-    str.erase(remove(str.begin(), str.end(), '\n'), str.end());
-    return str;
 }
