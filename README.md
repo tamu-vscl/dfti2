@@ -84,3 +84,5 @@ This will create a log file called DFTI_run_1.csv in the home directory and log 
 roslaunch dfti2 pixhawk_logger.launch run:=1 rcin_pins:=[1,2,3,4] rcout_pins:=[6,7,8,9] arduino_pins:=[59]
 
 this will log the same as the previous commands as well as the rc transmitter signal on channels 1, 2, 3 and 4, the command going to servos/motors on the output channels 6, 7, 8, and 9, and finally the analog single connected to pin 59 (A5).
+
+The file Logging_checklist.pdf has more information.
