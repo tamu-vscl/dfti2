@@ -106,24 +106,30 @@ void pixhawk_publisher_node::airspeedCallback(const mavros_msgs::VFR_HUD::ConstP
 
 void pixhawk_publisher_node::rcinCallback(const mavros_msgs::RCIn::ConstPtr& in_msg)
 {
-  dfti2::dftiData out_msg;
-  out_msg.header = in_msg->header;
-  for(int i = 0; i<rcin_pins.size(); i++)
+  if(in_msg->channels.size())
   {
-    out_msg.type = "I" + std::to_string(rcin_pins[i]);
-    out_msg.data = in_msg->channels[rcin_pins[i]-1];
-    data_pub.publish(out_msg);
+    dfti2::dftiData out_msg;
+    out_msg.header = in_msg->header;
+    for(int i = 0; i<rcin_pins.size(); i++)
+    {
+      out_msg.type = "I" + std::to_string(rcin_pins[i]);
+      out_msg.data = in_msg->channels[rcin_pins[i]-1];
+      data_pub.publish(out_msg);
+    }
   }
 }
 
 void pixhawk_publisher_node::rcoutCallback(const mavros_msgs::RCOut::ConstPtr& in_msg)
 {
-  dfti2::dftiData out_msg;
-  out_msg.header = in_msg->header;
-  for(int i = 0; i<rcout_pins.size(); i++)
+  if(in_msg->channels.size())
   {
-    out_msg.type = "O" + std::to_string(rcout_pins[i]);
-    out_msg.data = in_msg->channels[rcout_pins[i]-1];
-    data_pub.publish(out_msg);
+    dfti2::dftiData out_msg;
+    out_msg.header = in_msg->header;
+    for(int i = 0; i<rcout_pins.size(); i++)
+    {
+      out_msg.type = "O" + std::to_string(rcout_pins[i]);
+      out_msg.data = in_msg->channels[rcout_pins[i]-1];
+      data_pub.publish(out_msg);
+    }
   }
 }
