@@ -10,8 +10,11 @@ SERVO = 1
 
 def send_to_arduino(arduino,data):
     arduino.write(str(data).encode('utf-8'))
+    print("-----------------")
     recived = str(arduino.readline()[:-2])
+    print(recived)
     if not recived == str(data):
+        arduino.close()
         raise Exception("Failed to communicate with arduino while sending {} arduino received {}".format(data,recived))
 
 
@@ -40,17 +43,18 @@ for p in ports:
 
 if port == "":
     raise Exception("Failed to find Arduino.")
-    
-arduino = serial.Serial(port,115200)
 
-if arduino.readline()[:-2] == "a":
+arduino = serial.Serial('/dev/ttyACM0',115200,timeout=10)
+ready = arduino.readline()[:-2]
 
+if ready == "a":
+    send_to_arduino(arduino,number_of_sensors)
     for sensor in sensors:
         send_to_arduino(arduino,sensor["type"])
         send_to_arduino(arduino,sensor["pin"])
-
     send_to_arduino(arduino,stream_rate)
 
+    rospy.loginfo("Arduino Sending Data.")
     while not rospy.is_shutdown():
         msg.header.stamp = rospy.Time.now()
         if arduino.readline()[:-2] == "c":
@@ -60,5 +64,7 @@ if arduino.readline()[:-2] == "a":
                     msg.type = sensor["name"]
                     msg.data = sensor["state"]
                     dfti_data_pub.publish(msg)
+else:
+    rospy.logerr("No or incorrect response from arduino.")
 
 arduino.close()

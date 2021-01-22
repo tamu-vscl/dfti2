@@ -22,7 +22,7 @@
 
 
   <node pkg="dfti2" type="pixhawk_publisher"    name="pixhawk_publisher" output="screen" respawn="false" launch-prefix="bash -c 'sleep 5; $0 $@' "/>
-  <node pkg="dfti2" type="arduino_publisher.py" name="arduino_publisher" output="screen" respawn="false" launch-prefix="bash -c 'sleep 5; $0 $@' "/>
+  <node if="$(eval not arduino_pins == '[]')" pkg="dfti2" type="arduino_publisher.py" name="arduino_publisher" output="screen" respawn="false" launch-prefix="bash -c 'sleep 5; $0 $@' "/>
 
   <node if="$(arg do_logging)" name="dfti" pkg="dfti2" type="dfti" output="screen" launch-prefix="bash -c 'sleep $(arg logging_start_delay); $0 $@' "/>
 </launch>

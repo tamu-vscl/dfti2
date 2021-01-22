@@ -2,6 +2,7 @@
 #include <dfti2/dfti.h>
 #include <string>
 #include <vector>
+#include <stdlib.h>
 
 int main (int argc, char **argv)
 {
@@ -15,10 +16,10 @@ int main (int argc, char **argv)
 dfti::dfti()
 {
   // Where to store files
-  std::string path = "../data";
 
   int run; nh_.getParam("run",run);
-  logName_ = path + "/DFTI_run_ " + std::to_string(run) + ".csv";
+  std::string path = getenv("HOME");
+  logName_ = path + "/DFTI_run_" + std::to_string(run) + ".csv";
 
   // Create file
   ROS_INFO("Creating DFTI log file: %s",logName_.c_str());
