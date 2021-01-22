@@ -2,7 +2,6 @@
 #include <dfti2/dfti.h>
 #include <string>
 #include <vector>
-#include <filesystem>
 
 int main (int argc, char **argv)
 {
@@ -18,12 +17,8 @@ dfti::dfti()
   // Where to store files
   std::string path = "../data";
 
-  // Find old files so we don't overwrite them
-  vector<int> old_files;
-  for (const auto & entry : fs::directory_iterator(path)) old_files.push_back(entry.path().stem());
-  int file_count = 1;
-  while(std::find(old_files.begin(), old_files.end(), file_count) == old_files.end()) file_count++;
-  logName_ = format(path + "/DFTI_run_ " + std::string(file_count) + ".csv");
+  int run; nh_.getParam("run",run);
+  logName_ = path + "/DFTI_run_ " + std::to_string(run) + ".csv";
 
   // Create file
   ROS_INFO("Creating DFTI log file: %s",logName_.c_str());
