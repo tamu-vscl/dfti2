@@ -17,8 +17,8 @@ class pixhawk_publisher_node
     ros::Subscriber rcin_sub;
     ros::Subscriber rcout_sub;
     ros::Publisher data_pub;
-    std::vector<int> in_pins_to_pub;
-    std::vector<int> out_pins_to_pub;
+    std::vector<int> rcin_pins;
+    std::vector<int> rcout_pins;
 
     void odomCallback(const nav_msgs::Odometry::ConstPtr& in_msg);
     void airspeedCallback(const mavros_msgs::VFR_HUD::ConstPtr& in_msg);
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
   ros::spin();
   return 0;
 }
-pixhawk_publisher_node::
+
 pixhawk_publisher_node::pixhawk_publisher_node()
 {
   data_pub = n.advertise<dfti2::dftiData>("dfti_data",1000);
@@ -42,8 +42,8 @@ pixhawk_publisher_node::pixhawk_publisher_node()
   rcin_sub = n.subscribe("/mavros/rc/in",1000,&pixhawk_publisher_node::rcinCallback,this);
   rcout_sub = n.subscribe("/mavros/rc/out",1000,&pixhawk_publisher_node::rcoutCallback,this);
 
-  n.getParam("in_pins_to_pub",  in_pins_to_pub);
-  n.getParam("out_pins_to_pub", out_pins_to_pub);
+  n.getParam("rcin_pins", rcin_pins);
+  n.getParam("rcout_pins", rcout_pins);
 }
 
 void pixhawk_publisher_node::odomCallback(const nav_msgs::Odometry::ConstPtr& in_msg)
@@ -108,10 +108,10 @@ void pixhawk_publisher_node::rcinCallback(const mavros_msgs::RCIn::ConstPtr& in_
 {
   dfti2::dftiData out_msg;
   out_msg.header = in_msg->header;
-  for(int i = 0; i<in_pins_to_pub.size(); i++)
+  for(int i = 0; i<rcin_pins.size(); i++)
   {
-    out_msg.type = "I" + std::to_string(in_pins_to_pub[i]);
-    out_msg.data = in_msg->channels[in_pins_to_pub[i]-1];
+    out_msg.type = "I" + std::to_string(rcin_pins[i]);
+    out_msg.data = in_msg->channels[rcin_pins[i]-1];
     data_pub.publish(out_msg);
   }
 }
@@ -120,10 +120,10 @@ void pixhawk_publisher_node::rcoutCallback(const mavros_msgs::RCOut::ConstPtr& i
 {
   dfti2::dftiData out_msg;
   out_msg.header = in_msg->header;
-  for(int i = 0; i<out_pins_to_pub.size(); i++)
+  for(int i = 0; i<rcout_pins.size(); i++)
   {
-    out_msg.type = "O" + std::to_string(out_pins_to_pub[i]);
-    out_msg.data = in_msg->channels[out_pins_to_pub[i]-1];
+    out_msg.type = "O" + std::to_string(rcout_pins[i]);
+    out_msg.data = in_msg->channels[rcout_pins[i]-1];
     data_pub.publish(out_msg);
   }
 }

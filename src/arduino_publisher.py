@@ -10,9 +10,7 @@ SERVO = 1
 
 def send_to_arduino(arduino,data):
     arduino.write(str(data).encode('utf-8'))
-    print("-----------------")
     recived = str(arduino.readline()[:-2])
-    print(recived)
     if not recived == str(data):
         arduino.close()
         raise Exception("Failed to communicate with arduino while sending {} arduino received {}".format(data,recived))
@@ -26,7 +24,7 @@ for pin in pins:
     sensors.append({"pin":pin,"name":"S","type":SERVO,"state":-1})
 
 
-dfti_data_pub = rospy.Publisher('dfti_data',dftiData,queue_size=1000)
+dfti_data_pub = rospy.Publisher('dfti_data',dftiData,queue_size=1000,latch=True)
 rospy.init_node('arduino_publisher')
 msg = dftiData()
 
@@ -44,7 +42,7 @@ for p in ports:
 if port == "":
     raise Exception("Failed to find Arduino.")
 
-arduino = serial.Serial('/dev/ttyACM0',115200,timeout=10)
+arduino = serial.Serial(port,115200,timeout=10)
 ready = arduino.readline()[:-2]
 
 if ready == "a":
