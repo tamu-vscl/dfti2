@@ -68,6 +68,7 @@ After the data has been logged then the user can use the matlab file in the tool
 - Clone this directory into the src folder of the catkin workspace
 - catkin_make in the base directory of the workspace to compile it.
 - Source devel/setup.bash       <- This needs to be done everytime you want to run this package.
+- Install MAVROS via the instructions here: https://ardupilot.org/dev/docs/ros-install.html#installing-mavros
 
 ## Usage
 
