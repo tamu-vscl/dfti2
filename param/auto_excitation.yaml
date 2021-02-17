@@ -1,4 +1,4 @@
-type: 3                   # OFFSET = 0, SQUARE = 1, RAMP = 2, SINE = 3, SINE_SWEEP = 4
+type: 3                   # OFFSET = 0, SQUARE = 1, SAWTOOTH = 2, SINE = 3, SINE_SWEEP = 4
 period: 5.0               # (sec)
 frequency: 0.2            # (hz)
 amplitude: 0.5            # (% of throw (PWM value) in decemal form i.e. 0.12 = 12%)
