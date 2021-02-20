@@ -2,6 +2,10 @@
   <arg name="system_id"          default="255"    />
   <arg name="stream_rate"         default="100"   />
 
+  <rosparam command="load" file="$(find dfti2)/param/auto_excitation.yaml" />
+
+  <node pkg="dfti2" type="auto_excitation" name="auto_excitation" required="true" output="screen" />
+
   <node pkg="mavros" type="mavros_node" name="mavros" required="true" output="screen">
     <param name="system_id" value="$(arg system_id)" />
   </node>

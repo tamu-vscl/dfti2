@@ -1,11 +1,12 @@
 #ifndef AUTO_EXCITATION_H
 #define AUTO_EXCITATION_H
 
-#define SIGNAL_TYPE_OFFSET 0
-#define SIGNAL_TYPE_SQUARE 1
-#define SIGNAL_TYPE_SAWTOOTH 2
-#define SIGNAL_TYPE_SINE 3
-#define SIGNAL_TYPE_SINE_SWEEP 4
+#define SIGNAL_TYPE_IGNORE_CHANNEL 0
+#define SIGNAL_TYPE_OFFSET 1
+#define SIGNAL_TYPE_SQUARE 2
+#define SIGNAL_TYPE_SAWTOOTH 3
+#define SIGNAL_TYPE_SINE 4
+#define SIGNAL_TYPE_SINE_SWEEP 5
 
 #define PI 3.14159
 #define IGNORE_CHANNEL UINT16_MAX
@@ -13,7 +14,7 @@
 #include <ros/ros.h>
 
 #include <mavros_msgs/OverrideRCIn.h>
-#include <dfti2/DisturbInput.h>
+#include <std_srvs/Trigger.h>
 #include <mavros_msgs/RCIn.h>
 
 class AutoExcitation
@@ -23,7 +24,7 @@ public:
   struct Signal
   {
     // Signal parameters
-    int type = IGNORE_CHANNEL; // Type of signal
+    int type = SIGNAL_TYPE_IGNORE_CHANNEL; // Type of signal
     double period = 1; // Length of 1 period in seconds.
     double amplitude = 0; // Scaling factor for signal (exact implimentation varies between signal types) TODO: Units
     double offset = 1500; // Moves the signal up or down to center it around a value other then 0
@@ -33,7 +34,7 @@ public:
 
     // Logistical parameters
     double percent_of_period = 0; // Tracks where in the period the signal is curently
-    double value = UINT16_MAX; // Actual ouput of the signal generator
+    double value = IGNORE_CHANNEL; // Actual ouput of the signal generator
     double length = 1; // Number of periods to execute. Can be partial period(s)
   };
 
@@ -46,8 +47,8 @@ private:
   ros::Publisher offboard_override_pub_;
   ros::ServiceServer arm_disturb_input_svc_;
 
-  bool arm_disturb_input_callback(dfti2::DisturbInput::Request  &req,
-                                  dfti2::DisturbInput::Response &res);
+  bool arm_auto_excitation_callback(std_srvs::Trigger::Request  &req,
+                                    std_srvs::Trigger::Response &res);
   void update_signals();
   void update_signal(int i);
   void load_param();

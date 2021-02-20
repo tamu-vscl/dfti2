@@ -12,7 +12,7 @@
  *   this list of conditions and the following disclaimer in the documentation
  *   and/or other materials provided with the distribution.
  *
- * * Neither the name of the copyright holder nor the names of its
+ * * Neither the name of the copyrighhttps://github.com/tamu-vscl/dfti2.gitt holder nor the names of its
  *   contributors may be used to endorse or promote products derived from
  *   this software wit#include <ros/ros.h>hout specific prior written permission.
  *
@@ -45,26 +45,27 @@ int main(int argc, char **argv)
 {
   ros::init(argc, argv, "auto_excitation");
   AutoExcitation auto_excitation;
+  ROS_INFO("Auto excitation is ready!");
   ros::spin();
 }
 
 AutoExcitation::AutoExcitation()
 {
-  offboard_override_pub_ = nh_.advertise<mavros_msgs::OverrideRCIn>("/mavros/rc/override",1);
+  offboard_override_pub_ = nh_.advertise<mavros_msgs::OverrideRCIn>("/mavros/rc/override",1000);
 
   load_param();
 
-  arm_disturb_input_svc_ = nh_.advertiseService("arm_disturb_input", &AutoExcitation::arm_disturb_input_callback,this);
+  arm_disturb_input_svc_ = nh_.advertiseService("arm_auto_excitation", &AutoExcitation::arm_auto_excitation_callback,this);
 }
 
-bool AutoExcitation::arm_disturb_input_callback(dfti2::DisturbInput::Request  &req,
-                                                dfti2::DisturbInput::Response &res)
+bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &req,
+                                                  std_srvs::Trigger::Response &res)
 {
-  res.finished = false;
+  res.success = false;
 
   load_param();
 
-  ROS_WARN("Disturbance armed!");
+  ROS_WARN("Auto excitation armed!");
   double arm_time = ros::Time::now().toSec();
   ros::Rate loop_rate(10);
   boost::shared_ptr<mavros_msgs::RCIn const> rc_raw_msg;
@@ -73,26 +74,26 @@ bool AutoExcitation::arm_disturb_input_callback(dfti2::DisturbInput::Request  &r
     rc_raw_msg = ros::topic::waitForMessage<mavros_msgs::RCIn>("/mavros/rc/in");
     if(rc_raw_msg->channels[trigger_channel_]>1900)
     {
-      ROS_WARN("Initiating disturbance");
+      ROS_WARN("Initiating auto excitation!");
       break;
     }
 
     if ((ros::Time::now().toSec()-arm_time)>=arm_time_out_time_)
     {
-      ROS_INFO("The disturbance arm has timed out.");
-      return res.finished;
+      ROS_INFO("The auto excitation arm has timed out.");
+      return res.success;
     }
 
     loop_rate.sleep();
   }
 
   loop_rate = ros::Rate(update_rate_);
-  signal_start_time_ = ros::Time::now().toSec(); // TODO: remove from signal
-  while (!res.finished)
+  signal_start_time_ = ros::Time::now().toSec();
+  mavros_msgs::OverrideRCIn msg;
+  while (!res.success)
   {
     update_signals();
 
-    mavros_msgs::OverrideRCIn msg;
     for (int i = 0;i<8;i++)
     {
       msg.channels[i] = signal_[i].value;
@@ -101,24 +102,39 @@ bool AutoExcitation::arm_disturb_input_callback(dfti2::DisturbInput::Request  &r
     offboard_override_pub_.publish(msg);
     // TODO: add multi input
 
-    bool not_done = true;
-    for(int i = 0;i<8;i++){not_done &= (signal_[i].percent_of_period < signal_[i].length);}
-    res.finished = !not_done;
+    res.success = true;
+    for(int i = 0;i<8;i++){
+      if(signal_[i].percent_of_period < signal_[i].length)
+      {
+        res.success = false;
+        break;
+      }
+    }
 
-    rc_raw_msg = ros::topic::waitForMessage<mavros_msgs::RCIn>("/mavros/rc/in");
-    if(rc_raw_msg->channels[trigger_channel_]<=1900){break;}
+    // rc_raw_msg = ros::topic::waitForMessage<mavros_msgs::RCIn>("/mavros/rc/in");
+    // if(rc_raw_msg->channels[trigger_channel_]<=1900)
+    // {
+    //   ROS_ERROR("Pilot Overrided the auto excitation!");
+    //   break;
+    // }
 
+    ros::spinOnce();
     loop_rate.sleep();
   }
 
-  return res.finished;
+  ROS_INFO("Auto excitation complete.");
+
+  return res.success;
 }
 
 void AutoExcitation::update_signals()
 {
   for(int i = 0;i<8;i++)
   {
-    signal_[i].percent_of_period = (ros::Time::now().toSec() - (signal_start_time_ + signal_[i].delay))/signal_[i].period;
+    if(signal_[i].type != IGNORE_CHANNEL)
+    {
+      signal_[i].percent_of_period = (ros::Time::now().toSec() - (signal_start_time_ + signal_[i].delay))/signal_[i].period;
+    }
     if(0<=signal_[i].percent_of_period && signal_[i].percent_of_period<=signal_[i].length){update_signal(i);}
     else{signal_[i].value = IGNORE_CHANNEL;}
   }

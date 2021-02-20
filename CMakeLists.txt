@@ -5,6 +5,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  std_srvs
   message_generation
 )
 
@@ -15,16 +16,11 @@ add_message_files(
   dftiData.msg
 )
 
-add_service_files(
-  DIRECTORY srv
-  FILES
-  DisturbInput.srv
-)
-
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
   std_msgs
+  std_srvs
 )
 
 catkin_package(
