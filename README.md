@@ -54,6 +54,9 @@ This is then converted to
 Solution to the ODOM not publishing:
 Make sure the ardupilot parameter EK2_GPS_TYPE is set to 0
 
+Solution to the data not logging fast enough:
+There are many potential problems that could cause this, but one hard to identify one we recently discovered is that the parameter SCHED_LOOPRATE should be 400hz. 
+
 ### arduino_publisher.py
 This package also has the ability built in to read analog signials. Analog signals are read through an Arduino. Plug the ground wire in the ground of the arduino and the signal wire of the analog signal into an analog pin on the arduino. Then look up the pin number. You will need this later. Note that the numbers write on the side of the arduino is not sufficent. Each analog pin is also assigned a number without a letter before it. These values can be found in the file pins_arduino.h. An example of what I'm talking about can be found here https://forum.arduino.cc/index.php?topic=648092.0 The data for boards other then the mega can be found on the internet. Working with the mega example, say you put an analog wire in pin A5. The number associated with A5 on the arduino mega found at the link previously is 59. Finally connect the arduino via usb to the computer running dfti.
 

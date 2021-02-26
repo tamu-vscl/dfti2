@@ -19,9 +19,17 @@ def send_to_arduino(arduino,data):
 pins = rospy.get_param("arduino_pins")
 stream_rate = rospy.get_param("stream_rate")
 
+
 sensors = []
 for pin in pins:
-    sensors.append({"pin":pin,"name":"S","type":SERVO,"state":-1})
+    if pin == 54:
+    	sensors.append({"pin":pin,"name":"S0","type":SERVO,"state":-1})
+    elif pin == 55:
+    	sensors.append({"pin":pin,"name":"S1","type":SERVO,"state":-1})
+    elif pin == 56:
+    	sensors.append({"pin":pin,"name":"S2","type":SERVO,"state":-1})
+    elif pin == 57:
+    	sensors.append({"pin":pin,"name":"S3","type":SERVO,"state":-1})
 
 
 dfti_data_pub = rospy.Publisher('dfti_data',dftiData,queue_size=1000,latch=True)
