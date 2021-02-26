@@ -71,6 +71,7 @@ After the data has been logged then the user can use the matlab file in the tool
 - Clone this directory into the src folder of the catkin workspace
 - catkin_make in the base directory of the workspace to compile it.
 - Source devel/setup.bash       <- This needs to be done everytime you want to run this package.
+- Install MAVROS via the instructions here: https://ardupilot.org/dev/docs/ros-install.html#installing-mavros
 
 ## Usage
 
@@ -84,8 +85,8 @@ roslaunch dfti2 pixhawk_loger.launch run:=1
 
 This will create a log file called DFTI_run_1.csv in the home directory and log the state data x,y,z,u,v,w,p,q,r,q0,q1,q2,q3. where q0-4 are components of quaternian representing orentation.
 
-roslaunch dfti2 pixhawk_logger.launch run:=1 rcin_pins:=[1,2,3,4] rcout_pins:=[6,7,8,9] arduino_pins:=[59]
+roslaunch dfti2 pixhawk_logger.launch run:=1 rcin_pins:=[1,2,3,4] rcout_pins:=[6,7,8,9] arduino_pins:=[59] arduino_names:=[A]
 
-this will log the same as the previous commands as well as the rc transmitter signal on channels 1, 2, 3 and 4, the command going to servos/motors on the output channels 6, 7, 8, and 9, and finally the analog single connected to pin 59 (A5).
+this will log the same as the previous commands as well as the rc transmitter signal on channels 1, 2, 3 and 4, the command going to servos/motors on the output channels 6, 7, 8, and 9, and finally the analog single connected to pin 59 (A5). Note that if you include arduino_pins you must also include arduino_names and they must be the same length. The names are the identifier strings that will be logged with each dfti data point.
 
 The file Logging_checklist.pdf has more information.

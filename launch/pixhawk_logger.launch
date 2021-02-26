@@ -3,15 +3,17 @@
   <arg name="stream_rate"         default="100"   />
   <arg name="logging_start_delay" default="17"    />
   <arg name="do_logging"          default="true"  />
+  <arg name="arduino_names"       default="[]"    />
   <arg name="arduino_pins"        default="[]"    />
   <arg name="rcin_pins"           default="[]"    />
   <arg name="rcout_pins"          default="[]"    />
 
-  <rosparam param="run"          subst_value="true">$(arg run)</rosparam>
-  <rosparam param="stream_rate"  subst_value="true">$(arg stream_rate)</rosparam>
-  <rosparam param="arduino_pins" subst_value="true">$(arg arduino_pins)</rosparam>
-  <rosparam param="rcin_pins"    subst_value="true">$(arg rcin_pins)</rosparam>
-  <rosparam param="rcout_pins"   subst_value="true">$(arg rcout_pins)</rosparam>
+  <rosparam param="run"           subst_value="true">$(arg run)</rosparam>
+  <rosparam param="stream_rate"   subst_value="true">$(arg stream_rate)</rosparam>
+  <rosparam param="arduino_names" subst_value="true">$(arg arduino_names)</rosparm>
+  <rosparam param="arduino_pins"  subst_value="true">$(arg arduino_pins)</rosparam>
+  <rosparam param="rcin_pins"     subst_value="true">$(arg rcin_pins)</rosparam>
+  <rosparam param="rcout_pins"    subst_value="true">$(arg rcout_pins)</rosparam>
 
   <node if="$(eval not arduino_pins == '[]')" pkg="dfti2" type="arduino_publisher.py" name="arduino_publisher" output="screen" respawn="false"/>
   <!-- TODO: check order here -->
