@@ -5,7 +5,7 @@ offset:       [1500.0,1500.0,1500.0,1500.0,1000.0,2000.0,1000.0,1000.0]  # (% of
 f0:           [   1.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0]  # (hz) intial frequency for sine sweep
 f1:           [  10.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0]  # (hz) final frequency for sine sweep
 delay:        [   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0]  # (s) amout of time between intitating the disturbance and this channels signal start. Allows for offset signals.
-length:       [   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0]  # (hz) intial frequency for sine sweep     # (Number of periods)
+length:       [   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0]  # (Number of periods)
 arm_time_out_time: 10.0   # (s) The amount of time the system will wait for the pilot to initiate a disturbance after it was armed before it automatically disarms.
 trigger_channel: 8        # Transmitter channel which triggers the excitation. MUST BE >=8
 update_rate: 100.0        # (hz) The rate at which updates are sent.
