@@ -45,10 +45,13 @@ private:
 
   ros::NodeHandle nh_;
   ros::Publisher offboard_override_pub_;
+  ros::Subscriber rc_in_sub_;
   ros::ServiceServer arm_disturb_input_svc_;
 
   bool arm_auto_excitation_callback(std_srvs::Trigger::Request  &req,
                                     std_srvs::Trigger::Response &res);
+
+  void receive_rc_in_callback(const mavros_msgs::RCIn &rc_in);
   void update_signals();
   void update_signal(int i);
   void load_param();
@@ -58,6 +61,8 @@ private:
   int trigger_channel_;
   double update_rate_;
   double signal_start_time_;
+
+  unsigned int rc_trigger_channel_value;
 };
 
 #endif // AUTO_EXCITATION_H

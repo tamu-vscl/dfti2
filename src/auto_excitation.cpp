@@ -46,16 +46,23 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "auto_excitation");
   AutoExcitation auto_excitation;
   ROS_INFO("Auto excitation is ready!");
-  ros::spin();
+  ros::MultiThreadedSpinner spinner(4);
+  spinner.spin();
 }
 
 AutoExcitation::AutoExcitation()
 {
-  offboard_override_pub_ = nh_.advertise<mavros_msgs::OverrideRCIn>("/mavros/rc/override",1000);
+  offboard_override_pub_ = nh_.advertise<mavros_msgs::OverrideRCIn>("/mavros/rc/override",0);
+  rc_in_sub_ = nh_.subscribe("/mavros/rc/in", 1000, &AutoExcitation::receive_rc_in_callback, this);
 
   load_param();
 
   arm_disturb_input_svc_ = nh_.advertiseService("arm_auto_excitation", &AutoExcitation::arm_auto_excitation_callback,this);
+}
+
+void AutoExcitation::receive_rc_in_callback(const mavros_msgs::RCIn &rc_in)
+{
+  rc_trigger_channel_value = rc_in.channels[trigger_channel_];
 }
 
 bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &req,
@@ -64,15 +71,14 @@ bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &r
   res.success = false;
 
   load_param();
-
+  boost::shared_ptr<mavros_msgs::RCIn const> rc_raw_msg;
   ROS_WARN("Auto excitation armed!");
   double arm_time = ros::Time::now().toSec();
-  ros::Rate loop_rate(10);
-  boost::shared_ptr<mavros_msgs::RCIn const> rc_raw_msg;
+  ros::Rate loop_rate(update_rate_);
   while (1)
   {
-    rc_raw_msg = ros::topic::waitForMessage<mavros_msgs::RCIn>("/mavros/rc/in");
-    if(rc_raw_msg->channels[trigger_channel_]>1900)
+   
+    if(rc_trigger_channel_value>1900)
     {
       ROS_WARN("Initiating auto excitation!");
       break;
@@ -84,7 +90,7 @@ bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &r
       return res.success;
     }
 
-    loop_rate.sleep();
+    //loop_rate.sleep();
   }
 
   loop_rate = ros::Rate(update_rate_);
@@ -92,6 +98,7 @@ bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &r
   mavros_msgs::OverrideRCIn msg;
   while (!res.success)
   {
+    
     update_signals();
 
     for (int i = 0;i<8;i++)
@@ -111,12 +118,11 @@ bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &r
       }
     }
 
-    // rc_raw_msg = ros::topic::waitForMessage<mavros_msgs::RCIn>("/mavros/rc/in");
-    // if(rc_raw_msg->channels[trigger_channel_]<=1900)
-    // {
-    //   ROS_ERROR("Pilot Overrided the auto excitation!");
-    //   break;
-    // }
+    if(rc_trigger_channel_value<=1900)
+    {
+      ROS_ERROR("Pilot Overrided the auto excitation!");
+      break;
+    }
 
     ros::spinOnce();
     loop_rate.sleep();
