@@ -90,7 +90,7 @@ bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &r
       return res.success;
     }
 
-    //loop_rate.sleep();
+    loop_rate.sleep();
   }
 
   loop_rate = ros::Rate(update_rate_);
