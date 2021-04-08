@@ -7,17 +7,20 @@
   <arg name="arduino_pins"        default="[]"    />
   <arg name="rcin_pins"           default="[]"    />
   <arg name="rcout_pins"          default="[]"    />
+  <arg name="system_id"          default="255"    />
 
   <rosparam param="run"           subst_value="true">$(arg run)</rosparam>
   <rosparam param="stream_rate"   subst_value="true">$(arg stream_rate)</rosparam>
-  <rosparam param="arduino_names" subst_value="true">$(arg arduino_names)</rosparm>
+  <rosparam param="arduino_names" subst_value="true">$(arg arduino_names)</rosparam>
   <rosparam param="arduino_pins"  subst_value="true">$(arg arduino_pins)</rosparam>
   <rosparam param="rcin_pins"     subst_value="true">$(arg rcin_pins)</rosparam>
   <rosparam param="rcout_pins"    subst_value="true">$(arg rcout_pins)</rosparam>
 
   <node if="$(eval not arduino_pins == '[]')" pkg="dfti2" type="arduino_publisher.py" name="arduino_publisher" output="screen" respawn="false"/>
   <!-- TODO: check order here -->
-  <node pkg="mavros" type="mavros_node" name="mavros" output="screen" respawn="false" launch-prefix="bash -c 'sleep 10; $0 $@' "/>
+  <node pkg="mavros" type="mavros_node" name="mavros" output="screen" respawn="false" launch-prefix="bash -c 'sleep 10; $0 $@' ">
+	<param name="system_id" value="$(arg system_id)" />
+  </node>
 
   <node pkg="rosservice" type="rosservice" name="set_all_stream_rate"      args="call --wait /mavros/set_stream_rate 0 0 1"                   launch-prefix="bash -c 'sleep 11; $0 $@' "/>
   <node pkg="rosservice" type="rosservice" name="set_odom_stream_rate"     args="call --wait /mavros/set_stream_rate 3 $(arg stream_rate) 1"  launch-prefix="bash -c 'sleep 12; $0 $@' "/>
