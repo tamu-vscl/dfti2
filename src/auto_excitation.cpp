@@ -148,13 +148,14 @@ void AutoExcitation::update_signals()
 
 void AutoExcitation::update_signal(int i)
 {
+ // ROS_INFO("Signal Type: %i",signal_[i].type);
   switch(signal_[i].type)
   {
   case SIGNAL_TYPE_OFFSET:
     signal_[i].value = signal_[i].offset;
     break;
   case SIGNAL_TYPE_SQUARE: // Note that the square wave and ramp offset is bassed off of the zero point. i.e. an offset of 0 will cause the wave to oscilate between 0 and 1 (if the amplitude is 1).
-    signal_[i].value = floor(signal_[i].percent_of_period)>=0.5 ? signal_[i].amplitude+signal_[i].offset : signal_[i].offset;
+    signal_[i].value = (signal_[i].percent_of_period-floor(signal_[i].percent_of_period))>=0.5 ? signal_[i].amplitude+signal_[i].offset : signal_[i].offset;
     break;
   case SIGNAL_TYPE_SAWTOOTH: // Note that the square wave and ramp offset is bassed off of the zero point. i.e. an offset of 0 will cause the wave to oscilate between 0 and 1 (if the amplitude is 1).
     signal_[i].value = signal_[i].amplitude*floor(signal_[i].percent_of_period) + signal_[i].offset;
@@ -163,7 +164,54 @@ void AutoExcitation::update_signal(int i)
     signal_[i].value = signal_[i].amplitude*sin(signal_[i].percent_of_period*2*PI) + signal_[i].offset;
     break;
   case SIGNAL_TYPE_SINE_SWEEP:
-    signal_[i].value = signal_[i].amplitude*sin(2*PI*((signal_[i].f1-signal_[i].f0)/2*pow(signal_[i].percent_of_period,2)*signal_[i].period + signal_[i].f0*signal_[i].percent_of_period*signal_[i].period)) + signal_[i].offset;
+    signal_[i].value = signal_[i].amplitude*sin(2*PI*((signal_[i].f1-signal_[i].f0)/2*pow(signal_[i].percent_of_period,2)*signal_[i].period + signal_[i].f0*signal_[i].percent_of_period*signal_[i].period)) + signal_[i].offset;\
+    break;
+  case SIGNAL_TYPE_THROTTLE_MAX_IDLE:
+    if (signal_[i].percent_of_period<=0.10) {
+       signal_[i].value = 1900;
+    }
+    else
+       signal_[i].value = 1100;
+    break;
+  case SIGNAL_TYPE_DOUBLET:
+   // ROS_INFO("Percent of Period: %f",signal_[i].percent_of_period);
+    if (signal_[i].percent_of_period<=0.5) {
+       signal_[i].value = signal_[i].offset + signal_[i].amplitude;
+    }
+    else if (signal_[i].percent_of_period>0.5) {
+       signal_[i].value = signal_[i].offset - signal_[i].amplitude;	
+    }
+    else // This will set control surface at the offset/trim value as a fail-safe if other cases fail
+      signal_[i].value = signal_[i].offset;
+    break;
+  case SIGNAL_TYPE_TRIPLET:
+    if (signal_[i].percent_of_period<=1.0/3.0) {
+       signal_[i].value = signal_[i].offset + signal_[i].amplitude;
+    }
+    else if (signal_[i].percent_of_period>1.0/3.0 && signal_[i].percent_of_period<=2.0/3.0) {
+       signal_[i].value = signal_[i].offset - signal_[i].amplitude;	
+    }
+    else if (signal_[i].percent_of_period>2.0/3.0) {
+       signal_[i].value = signal_[i].offset + signal_[i].amplitude;
+    }       
+    else // This will set control surface at the offset/trim value as a fail-safe if other cases fail
+      signal_[i].value = signal_[i].offset;
+    break;
+  case SIGNAL_TYPE_T2O2:
+    if (signal_[i].percent_of_period<=3.0/7.0) {
+      signal_[i].value = signal_[i].offset + signal_[i].amplitude;
+    }
+    else if (signal_[i].percent_of_period>3.0/7.0 && signal_[i].percent_of_period<=5.0/7.0) {
+      signal_[i].value = signal_[i].offset - signal_[i].amplitude;
+    }
+    else if (signal_[i].percent_of_period>5.0/7.0 && signal_[i].percent_of_period<=6.0/7.0 ) {
+      signal_[i].value = signal_[i].offset + signal_[i].amplitude;
+    }
+    else if (signal_[i].percent_of_period>6.0/7.0) {
+      signal_[i].value = signal_[i].offset - signal_[i].amplitude;
+    }
+    else // This will set control surface at the offset/trim value as a fail-safe if other cases fail
+      signal_[i].value = signal_[i].offset;
     break;
   default: // This tells the autopilot to ignore this signal and the RC signal is used instead.
     signal_[i].value = IGNORE_CHANNEL;

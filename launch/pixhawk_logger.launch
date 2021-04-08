@@ -10,7 +10,6 @@
 
   <rosparam param="run"           subst_value="true">$(arg run)</rosparam>
   <rosparam param="stream_rate"   subst_value="true">$(arg stream_rate)</rosparam>
-  <rosparam param="arduino_names" subst_value="true">$(arg arduino_names)</rosparm>
   <rosparam param="arduino_pins"  subst_value="true">$(arg arduino_pins)</rosparam>
   <rosparam param="rcin_pins"     subst_value="true">$(arg rcin_pins)</rosparam>
   <rosparam param="rcout_pins"    subst_value="true">$(arg rcout_pins)</rosparam>

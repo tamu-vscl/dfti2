@@ -17,7 +17,7 @@ def send_to_arduino(arduino,data):
 
 
 pins = rospy.get_param("arduino_pins")
-names = rospy.get_param("arduino_names")
+#names = rospy.get_param("arduino_names")
 stream_rate = rospy.get_param("stream_rate")
 
 
