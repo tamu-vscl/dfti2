@@ -65,13 +65,13 @@ void pixhawk_publisher_node::odomCallback(const nav_msgs::Odometry::ConstPtr& in
   out_msg.data = in_msg->pose.pose.orientation.w;
   data_pub.publish(out_msg);
   out_msg.type = "q1";
-  out_msg.data = in_msg->pose.pose.orientation.y;
-  data_pub.publish(out_msg);
-  out_msg.type = "q2";
   out_msg.data = in_msg->pose.pose.orientation.x;
   data_pub.publish(out_msg);
+  out_msg.type = "q2";
+  out_msg.data = in_msg->pose.pose.orientation.y;
+  data_pub.publish(out_msg);
   out_msg.type = "q3";
-  out_msg.data = -in_msg->pose.pose.orientation.z;
+  out_msg.data = in_msg->pose.pose.orientation.z;
   data_pub.publish(out_msg);
 
   out_msg.type = "u";
