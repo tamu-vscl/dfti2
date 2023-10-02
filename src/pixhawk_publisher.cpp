@@ -62,7 +62,7 @@ void pixhawk_publisher_node::odomCallback(const nav_msgs::Odometry::ConstPtr& in
   data_pub.publish(out_msg);
 
   out_msg.type = "q0";
-  out_msg.data = in_msg->pose.pose.orientation.w;
+  out_msg.data = in_msg->pose.pose.orientation.w; // Quaternions in East-North-Up (ENU) frame
   data_pub.publish(out_msg);
   out_msg.type = "q1";
   out_msg.data = in_msg->pose.pose.orientation.x;

@@ -96,6 +96,34 @@ bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &r
   loop_rate = ros::Rate(update_rate_);
   signal_start_time_ = ros::Time::now().toSec();
   mavros_msgs::OverrideRCIn msg;
+  
+  mavros_msgs::SetMode flt_mode;
+  flt_mode.request.custom_mode = "STABILIZE";
+
+  if (set_mode_client.call(flt_mode) &&
+      flt_mode.response.mode_sent)
+  {
+    ROS_INFO("STABILIZE mode enabled");
+  }
+  else
+  {
+    ROS_INFO("Failed to enable STABILIZE");
+  }
+
+  ros::Duration(1.0).sleep();
+
+  flt_mode.request.custom_mode = "MANUAL";
+
+  if (set_mode_client.call(flt_mode) &&
+      flt_mode.response.mode_sent)
+  {
+    ROS_INFO("MANUAL mode enabled");
+  }
+  else
+  {
+    ROS_INFO("Failed to enable MANUAL");
+  }
+
   while (!res.success)
   {
     
@@ -164,22 +192,24 @@ void AutoExcitation::update_signal(int i)
     signal_[i].value = signal_[i].amplitude*sin(signal_[i].percent_of_period*2*PI) + signal_[i].offset;
     break;
   case SIGNAL_TYPE_SINE_SWEEP:
-    signal_[i].value = signal_[i].amplitude*sin(2*PI*((signal_[i].f1-signal_[i].f0)/2*pow(signal_[i].percent_of_period,2)*signal_[i].period + signal_[i].f0*signal_[i].percent_of_period*signal_[i].period)) + signal_[i].offset;\
+    signal_[i].value = signal_[i].amplitude*sin(2*PI*((signal_[i].f1-signal_[i].f0)/2*pow(signal_[i].percent_of_period,2)*signal_[i].period + signal_[i].f0*signal_[i].percent_of_period*signal_[i].period)) + signal_[i].offset;
     break;
   case SIGNAL_TYPE_THROTTLE_MAX_IDLE:
     if (signal_[i].percent_of_period<=0.10) {
-       signal_[i].value = 1900;
+       signal_[i].value = 1871;
     }
     else
-       signal_[i].value = 1100;
+       signal_[i].value = 1262;
     break;
   case SIGNAL_TYPE_DOUBLET:
    // ROS_INFO("Percent of Period: %f",signal_[i].percent_of_period);
     if (signal_[i].percent_of_period<=0.5) {
        signal_[i].value = signal_[i].offset + signal_[i].amplitude;
+       //signal_[i].value = signal_[i].offset;
     }
     else if (signal_[i].percent_of_period>0.5) {
-       signal_[i].value = signal_[i].offset - signal_[i].amplitude;	
+       signal_[i].value = signal_[i].offset - signal_[i].amplitude;
+	//signal_[i].value = signal_[i].amplitude;	
     }
     else // This will set control surface at the offset/trim value as a fail-safe if other cases fail
       signal_[i].value = signal_[i].offset;
@@ -213,8 +243,66 @@ void AutoExcitation::update_signal(int i)
     else // This will set control surface at the offset/trim value as a fail-safe if other cases fail
       signal_[i].value = signal_[i].offset;
     break;
-  default: // This tells the autopilot to ignore this signal and the RC signal is used instead.
-    signal_[i].value = IGNORE_CHANNEL;
+  case SIGNAL_TYPE_M2_MAX:
+   if (signal_[i].percent_of_period <= 2.0/signal_[i].period) {
+     signal_[i].value = 1871;
+   }
+   else if (signal_[i].percent_of_period > 2.0/signal_[i].period) {
+     signal_[i].value = 1262;
+   }
+   else // This will set motor to idle as a fail-safe
+     signal_[i].value = 1262;
+   break;
+
+  case SIGNAL_TYPE_SCHROEDER3:
+   signal_[i].value = signal_[i].offset + signal_[i].amplitude*sqrt(signal_[i].p1)*cos((PI*signal_[i].k1*signal_[i].percent_of_period*signal_[i].period)+signal_[i].phi1) + signal_[i].amplitude*sqrt(signal_[i].p2)*cos((PI*signal_[i].k2*signal_[i].percent_of_period*signal_[i].period)+signal_[i].phi2) + signal_[i].amplitude*sqrt(signal_[i].p3)*cos((PI*signal_[i].k3*signal_[i].percent_of_period*signal_[i].period)+signal_[i].phi3);
+   break;
+  case SIGNAL_TYPE_SCHROEDER4:
+   signal_[i].value = signal_[i].offset + signal_[i].amplitude*sqrt(signal_[i].p1)*cos((PI*signal_[i].k1*signal_[i].percent_of_period*signal_[i].period)+signal_[i].phi1) + signal_[i].amplitude*sqrt(signal_[i].p2)*cos((PI*signal_[i].k2*signal_[i].percent_of_period*signal_[i].period)+signal_[i].phi2) + signal_[i].amplitude*sqrt(signal_[i].p3)*cos((PI*signal_[i].k3*signal_[i].percent_of_period*signal_[i].period)+signal_[i].phi3) + signal_[i].amplitude*sqrt(signal_[i].p4)*cos((PI*signal_[i].k4*signal_[i].percent_of_period*signal_[i].period)+signal_[i].phi4);
+   break;
+  case SIGNAL_TYPE_SCHROEDER5:
+   signal_[i].value = signal_[i].offset +  signal_[i].amplitude*sqrt(signal_[i].p1)*cos((PI*signal_[i].k1*signal_[i].percent_of_period*signal_[i].period)+signal_[i].phi1) + signal_[i].amplitude*sqrt(signal_[i].p2)*cos((PI*signal_[i].k2*signal_[i].percent_of_period*signal_[i].period)+signal_[i].phi2) + signal_[i].amplitude*sqrt(signal_[i].p3)*cos((PI*signal_[i].k3*signal_[i].percent_of_period*signal_[i].period)+signal_[i].phi3) + signal_[i].amplitude*sqrt(signal_[i].p4)*cos((PI*signal_[i].k4*signal_[i].percent_of_period*signal_[i].period)+signal_[i].phi4) + signal_[i].amplitude*sqrt(signal_[i].p5)*cos((PI*signal_[i].k5*signal_[i].percent_of_period*signal_[i].period)+signal_[i].phi5);
+   break;
+  case SIGNAL_TYPE_A_DOUBLET1:
+   // ROS_INFO("Percent of Period: %f",signal_[i].percent_of_period);
+    if (signal_[i].percent_of_period<=0.5) {
+       signal_[i].value = signal_[i].offset + signal_[i].amplitude;
+       //signal_[i].value = signal_[i].offset;
+    }
+    else if (signal_[i].percent_of_period>0.5) {
+       signal_[i].value = signal_[i].offset - 0.75*signal_[i].amplitude;
+	//signal_[i].value = signal_[i].amplitude;	
+    }
+    else // This will set control surface at the offset/trim value as a fail-safe if other cases fail
+      signal_[i].value = signal_[i].offset;
+    break;
+
+  case SIGNAL_TYPE_A_DOUBLET2:
+   // ROS_INFO("Percent of Period: %f",signal_[i].percent_of_period);
+    if (signal_[i].percent_of_period<=0.5) {
+       signal_[i].value = signal_[i].offset + signal_[i].amplitude;
+       //signal_[i].value = signal_[i].offset;
+    }
+    else if (signal_[i].percent_of_period>0.5) {
+       signal_[i].value = signal_[i].offset - 0.5*signal_[i].amplitude;
+	//signal_[i].value = signal_[i].amplitude;	
+    }
+    else // This will set control surface at the offset/trim value as a fail-safe if other cases fail
+      signal_[i].value = signal_[i].offset;
+    break;
+
+  case SIGNAL_TYPE_A_DOUBLET3:
+   // ROS_INFO("Percent of Period: %f",signal_[i].percent_of_period);
+    if (signal_[i].percent_of_period<=0.5) {
+       signal_[i].value = signal_[i].offset + signal_[i].amplitude;
+       //signal_[i].value = signal_[i].offset;
+    }
+    else if (signal_[i].percent_of_period>0.5) {
+       signal_[i].value = signal_[i].offset - 0.25*signal_[i].amplitude;
+	//signal_[i].value = signal_[i].amplitude;	
+    }
+    else // This will set control surface at the offset/trim value as a fail-safe if other cases fail
+      signal_[i].value = signal_[i].offset;
     break;
   }
 }
@@ -227,8 +315,18 @@ void AutoExcitation::load_param()
   std::vector<double> offset;
   std::vector<double> f0;
   std::vector<double> f1;
+  std::vector<double> k1;
+  std::vector<double> k2;
+  std::vector<double> k3;
+  std::vector<double> k4;
+  std::vector<double> k5;
+  std::vector<double> p1;
+  std::vector<double> p2;
+  std::vector<double> p3;
+  std::vector<double> p4;
+  std::vector<double> p5;
+  std::vector<double> M;
   std::vector<double> delay;
-
   std::vector<double> length;
 
   // load parameters
@@ -238,6 +336,17 @@ void AutoExcitation::load_param()
   nh_.getParam("offset",offset);
   nh_.getParam("f0",f1);
   nh_.getParam("f1",f0);
+  nh_.getParam("k1",k1);
+  nh_.getParam("k2",k2);
+  nh_.getParam("k3",k3);
+  nh_.getParam("k4",k4);
+  nh_.getParam("k5",k5);
+  nh_.getParam("p1",p1);
+  nh_.getParam("p2",p2);
+  nh_.getParam("p3",p3);
+  nh_.getParam("p4",p4);
+  nh_.getParam("p5",p5);
+  nh_.getParam("M",M);
   nh_.getParam("delay",delay);
   nh_.getParam("length",length);
 
@@ -249,6 +358,22 @@ void AutoExcitation::load_param()
     signal_[i].offset = offset[i];
     signal_[i].f0 = f0[i];
     signal_[i].f1 = f1[i];
+    signal_[i].k1 = k1[i];
+    signal_[i].k2 = k2[i];
+    signal_[i].k3 = k3[i];
+    signal_[i].k4 = k4[i];
+    signal_[i].k5 = k5[i];
+    signal_[i].p1 = p1[i];
+    signal_[i].p2 = p2[i];
+    signal_[i].p3 = p3[i];
+    signal_[i].p4 = p4[i];
+    signal_[i].p5 = p5[i]; 
+    signal_[i].M = M[i];
+    signal_[i].phi1 = 0.0;
+    signal_[i].phi2 = signal_[i].phi1 - (PI*pow(signal_[i].k2,2))/signal_[i].M;
+    signal_[i].phi3 = signal_[i].phi2 - (PI*pow(signal_[i].k3,2))/signal_[i].M;
+    signal_[i].phi4 = signal_[i].phi3 - (PI*pow(signal_[i].k4,2))/signal_[i].M;
+    signal_[i].phi5 = signal_[i].phi4 - (PI*pow(signal_[i].k5,2))/signal_[i].M;
     signal_[i].delay = delay[i];
     signal_[i].percent_of_period = 0;
     signal_[i].value = IGNORE_CHANNEL;
