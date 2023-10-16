@@ -44,7 +44,7 @@ void setup()
   // initialize interupts and pin types
   for(int i = 0;i<number_of_sensors;i++)
   {
-    pinMode(sensor_pin[i],INPUT_PULLUP);
+    pinMode(sensor_pin[i],INPUT);
   }
 }
 
