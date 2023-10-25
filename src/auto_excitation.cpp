@@ -124,6 +124,8 @@ bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &r
     ROS_INFO("Failed to enable MANUAL");
   }
 
+  wing_level_duration_ = ros::Time::now().toSec();
+
   while (!res.success)
   {
     
@@ -167,7 +169,7 @@ void AutoExcitation::update_signals()
   {
     if(signal_[i].type != IGNORE_CHANNEL)
     {
-      signal_[i].percent_of_period = (ros::Time::now().toSec() - (signal_start_time_ + signal_[i].delay))/signal_[i].period;
+      signal_[i].percent_of_period = (ros::Time::now().toSec() - (signal_start_time_ + wing_level_duration_ + signal_[i].delay))/signal_[i].period;
     }
     if(0<=signal_[i].percent_of_period && signal_[i].percent_of_period<=signal_[i].length){update_signal(i);}
     else{signal_[i].value = IGNORE_CHANNEL;}
