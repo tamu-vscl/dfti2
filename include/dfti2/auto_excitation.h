@@ -90,6 +90,7 @@ private:
   int trigger_channel_;
   double update_rate_;
   double signal_start_time_;
+  double wing_level_duration_;
 
   unsigned int rc_trigger_channel_value;
 };
