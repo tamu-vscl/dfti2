@@ -124,7 +124,7 @@ bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &r
     ROS_INFO("Failed to enable MANUAL");
   }
 
-  wing_level_duration_ = ros::Time::now().toSec();
+  double wing_level_duration_ = ros::Time::now().toSec();
 
   while (!res.success)
   {
