@@ -94,7 +94,6 @@ bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &r
   }
 
   loop_rate = ros::Rate(update_rate_);
-  signal_start_time_ = ros::Time::now().toSec();
   mavros_msgs::OverrideRCIn msg;
   
   mavros_msgs::SetMode flt_mode;
@@ -124,6 +123,8 @@ bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &r
     ROS_INFO("Failed to enable MANUAL");
   }
 
+  signal_start_time_ = ros::Time::now().toSec();
+  
   while (!res.success)
   {
     
