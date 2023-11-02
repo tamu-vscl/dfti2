@@ -5,7 +5,7 @@
 #alieron, elevator, throttle, rudder
 type:         [ 7,  0,  0, 8,    0,   0,     0,     0]  # IGNORE_CHANNEL = 0, OFFSET = 1, SQUARE = 2, SAWTOOTH = 3, SINE = 4, SINE_SWEEP = 5 THROTTLE_MAX_IDLE = 6 DOUBLET = 7 TRIPLET = 8 3211 = 9 
 period:       [ 1.7, 0.0,  0.0, 1.65, 0.0,  0.0,  0.0,  0.0]  # (sec)
-amplitude:    [ 18.0, 0.0, 0.0, 67.0, 0.0,   0.0,   0.0,   0.0]  # (% of throw (PWM value) in decemal form i.e. 0.12 = 12%)
+amplitude:    [ 125.0, 0.0, 0.0, 125.0, 0.0,   0.0,   0.0,   0.0]  # (% of throw (PWM value) in decemal form i.e. 0.12 = 12%)
 offset:       [1517.0, 1518.0, 1500.0, 1510.0,1500.0,2000.0,1000.0,1000.0]  # (% of throw (PWM value) in decemal form i.e. 0.12 = 12%)
 f0:           [  9.0,   14.0,   0.0,   10.0,   0.0,   0.0,   0.0,   0.0]  # (hz) intial frequency for sine sweep
 f1:           [  0.0,  0.0,   0.0,  0.0,   0.0,   0.0,   0.0,   0.0]  # (hz) final frequency for sine sweep

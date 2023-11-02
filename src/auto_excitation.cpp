@@ -97,16 +97,16 @@ bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &r
   mavros_msgs::OverrideRCIn msg;
   
   mavros_msgs::SetMode flt_mode;
-  flt_mode.request.custom_mode = "STABILIZE";
+  flt_mode.request.custom_mode = "FBWA";
 
   if (set_mode_client.call(flt_mode) &&
       flt_mode.response.mode_sent)
   {
-    ROS_INFO("STABILIZE mode enabled");
+    ROS_INFO("FBWA mode enabled");
   }
   else
   {
-    ROS_INFO("Failed to enable STABILIZE");
+    ROS_INFO("Failed to enable FBWA");
   }
 
   ros::Duration(1.0).sleep();
@@ -139,11 +139,15 @@ bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &r
     // TODO: add multi input
 
     res.success = true;
-    for(int i = 0;i<8;i++){
-      if(signal_[i].percent_of_period < signal_[i].length)
+    for(int i = 0;i<8;i++)
+    {
+      if(signal_[i].type != SIGNAL_TYPE_IGNORE_CHANNEL)
       {
-        res.success = false;
-        break;
+        if(signal_[i].percent_of_period < signal_[i].length)
+        {
+          res.success = false;
+          break;
+        }
       }
     }
 
@@ -166,12 +170,19 @@ void AutoExcitation::update_signals()
 {
   for(int i = 0;i<8;i++)
   {
-    if(signal_[i].type != IGNORE_CHANNEL)
+    if(signal_[i].type != SIGNAL_TYPE_IGNORE_CHANNEL)
     {
       signal_[i].percent_of_period = (ros::Time::now().toSec() - (signal_start_time_ + signal_[i].delay))/signal_[i].period;
     }
-    if(0<=signal_[i].percent_of_period && signal_[i].percent_of_period<=signal_[i].length){update_signal(i);}
-    else{signal_[i].value = IGNORE_CHANNEL;}
+    
+    if(0<=signal_[i].percent_of_period && signal_[i].percent_of_period<=signal_[i].length)
+    {
+      update_signal(i);
+    }
+    else
+    {
+      signal_[i].value = IGNORE_CHANNEL;
+    }
   }
 }
 
