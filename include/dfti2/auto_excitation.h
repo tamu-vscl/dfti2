@@ -28,6 +28,8 @@
 #include <mavros_msgs/SetMode.h>
 #include <std_srvs/Trigger.h>
 #include <mavros_msgs/RCIn.h>
+#include "dfti2/dftiData.h"
+#include "dfti2/ControlSurfaceCalibration.h"
 
 class AutoExcitation
 {
@@ -74,11 +76,16 @@ private:
   ros::NodeHandle nh_;
   ros::Publisher offboard_override_pub_;
   ros::Subscriber rc_in_sub_;
+  ros::Publisher data_pub_;
   ros::ServiceServer arm_disturb_input_svc_;
+  ros::ServiceServer arm_calibration_svc_;
   ros::ServiceClient set_mode_client = nh_.serviceClient<mavros_msgs::SetMode>("mavros/set_mode");
 
   bool arm_auto_excitation_callback(std_srvs::Trigger::Request  &req,
                                     std_srvs::Trigger::Response &res);
+
+  bool arm_calibration_callback(dfti2::ControlSurfaceCalibration::Request &req,
+                                    dfti2::ControlSurfaceCalibration::Response &res);
 
   void receive_rc_in_callback(const mavros_msgs::RCIn &rc_in);
   void update_signals();
