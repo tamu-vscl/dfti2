@@ -58,6 +58,7 @@ AutoExcitation::AutoExcitation()
   load_param();
 
   arm_disturb_input_svc_ = nh_.advertiseService("arm_auto_excitation", &AutoExcitation::arm_auto_excitation_callback,this);
+  arm_calibration_svc_ = nh_.advertiseService("arm_control_surface_calibration", &AutoExcitation::arm_calibration_callback, this);
 }
 
 void AutoExcitation::receive_rc_in_callback(const mavros_msgs::RCIn &rc_in)
@@ -165,6 +166,32 @@ bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &r
 
   return res.success;
 }
+
+
+bool AutoExcitation::arm_calibration_callback(dfti2::ControlSurfaceCalibration::Request &req,
+                                                  dfti2::ControlSurfaceCalibration::Response &res)
+{
+  // res.success = false;
+  
+  // if (req.controlSurface != "LA" || req.controlSurface != "RA" || req.controlSurface != "BL" || req.controlSurface != "BR" ) // Temp vars 
+  // {
+  //  return res.success;
+  // }
+
+  // dfti2::dftiData out_msg;
+  // out_msg.
+  // data_pub_.publish(out_msg);
+  // indicate beginning of calibration in the log file
+  // publishing to dfit node
+  // call auto excitation callback function with desired sine sweeps
+  // indicate end of calibration
+  
+  // ROS_WARN((static_cast<std::string>("Starting control surface calibration: ") + req.controlSurface).c_str());
+
+  return res.success;
+}
+
+
 
 void AutoExcitation::update_signals()
 {
