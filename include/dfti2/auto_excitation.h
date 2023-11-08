@@ -20,7 +20,7 @@
 #define SIGNAL_TYPE_A_DOUBLET3 16
 
 #define PI 3.14159
-#define IGNORE_CHANNEL UINT16_MAX
+#define IGNORE_CHANNEL 0
 
 #include <ros/ros.h>
 
