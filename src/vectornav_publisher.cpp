@@ -44,4 +44,25 @@ void vectornav_publisher_node::insCallback(const vectornav::Ins::ConstPtr& in_ms
   out_msg.type = "vn_phi";
   out_msg.data = -in_msg->roll;
   data_pub.publish(out_msg);
+
+  out_msg.type = "vn_lat";  // default to NED unless changed in the vectornav param file
+  out_msg.data = in_msg->latitude;
+  data_pub.publish(out_msg);
+  out_msg.type = "vn_long";
+  out_msg.data = in_msg->longitude;
+  data_pub.publish(out_msg);
+  out_msg.type = "vn_alt";
+  out_msg.data = -in_msg->altitude;
+  data_pub.publish(out_msg);
+
+  out_msg.type = "vn_u";  // default to NED unless changed in the vectornav param file
+  out_msg.data = in_msg->velN;
+  data_pub.publish(out_msg);
+  out_msg.type = "vn_v";
+  out_msg.data = in_msg->velE;
+  data_pub.publish(out_msg);
+  out_msg.type = "vn_w";
+  out_msg.data = -in_msg->velD;
+  data_pub.publish(out_msg);
+
 }
