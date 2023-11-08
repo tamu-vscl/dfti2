@@ -110,7 +110,7 @@ bool AutoExcitation::arm_auto_excitation_callback(std_srvs::Trigger::Request  &r
     ROS_INFO("Failed to enable FBWA");
   }
 
-  ros::Duration(1.0).sleep();
+  ros::Duration(2.0).sleep();
 
   flt_mode.request.custom_mode = "MANUAL";
 
@@ -284,13 +284,13 @@ void AutoExcitation::update_signal(int i)
     break;
   case SIGNAL_TYPE_M2_MAX:
    if (signal_[i].percent_of_period <= 2.0/signal_[i].period) {
-     signal_[i].value = 1871;
+     signal_[i].value = signal_[i].offset + signal_[i].amplitude;
    }
    else if (signal_[i].percent_of_period > 2.0/signal_[i].period) {
-     signal_[i].value = 1262;
+     signal_[i].value = signal_[i].offset;
    }
    else // This will set motor to idle as a fail-safe
-     signal_[i].value = 1262;
+     signal_[i].value = signal_[i].offset;
    break;
 
   case SIGNAL_TYPE_SCHROEDER3:
