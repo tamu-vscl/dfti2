@@ -56,13 +56,13 @@ void vectornav_publisher_node::insCallback(const vectornav::Ins::ConstPtr& in_ms
   data_pub.publish(out_msg);
 
   out_msg.type = "vn_u";  // default to NED unless changed in the vectornav param file
-  out_msg.data = in_msg->velN;
+  out_msg.data = in_msg->nedVelX;
   data_pub.publish(out_msg);
   out_msg.type = "vn_v";
-  out_msg.data = in_msg->velE;
+  out_msg.data = in_msg->nedVelY;
   data_pub.publish(out_msg);
   out_msg.type = "vn_w";
-  out_msg.data = -in_msg->velD;
+  out_msg.data = -in_msg->nedVelZ;
   data_pub.publish(out_msg);
 
 }
