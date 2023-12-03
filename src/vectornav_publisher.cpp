@@ -10,10 +10,10 @@ class vectornav_publisher_node
     vectornav_publisher_node();
   private:
     ros::NodeHandle n;
-    ros::Subscriber ins_sub;
+    ros::Subscriber odom_sub;
     ros::Publisher data_pub;
 
-    void insCallback(const vectornav::Ins::ConstPtr& in_msg);
+    void odomCallback(const nav_msgs::Odometry::ConstPtr& odom_msg);
 };
 
 int main(int argc, char **argv)
@@ -27,42 +27,71 @@ int main(int argc, char **argv)
 vectornav_publisher_node::vectornav_publisher_node()
 {
   data_pub = n.advertise<dfti2::dftiData>("dfti_data",1000);
-  ins_sub = n.subscribe("/vectornav/INS",1000,&vectornav_publisher_node::insCallback,this);
+  odom_sub = n.subscribe("/vectornav/Odom",1000,&vectornav_publisher_node::odomCallback,this);
 }
 
-void vectornav_publisher_node::insCallback(const vectornav::Ins::ConstPtr& in_msg)
+void vectornav_publisher_node::odomCallback(const nav_msgs::Odometry::ConstPtr& odom_msg)
 {
   dfti2::dftiData out_msg;
-  out_msg.header = in_msg->header;
+  out_msg.header = odom_msg->header;
 
-  out_msg.type = "vn_psi";  // default to NED unless changed in the vectornav param file
-  out_msg.data = in_msg->yaw;
-  data_pub.publish(out_msg);
-  out_msg.type = "vn_theta";
-  out_msg.data = in_msg->pitch;
-  data_pub.publish(out_msg);
-  out_msg.type = "vn_phi";
-  out_msg.data = -in_msg->roll;
+  // Publish Quaterions 
+  out_msg.type = "vn_qi";
+  out_msg.data = odom_msg->pose.pose.orientation.x;
   data_pub.publish(out_msg);
 
-  out_msg.type = "vn_lat";  // default to NED unless changed in the vectornav param file
-  out_msg.data = in_msg->latitude;
-  data_pub.publish(out_msg);
-  out_msg.type = "vn_long";
-  out_msg.data = in_msg->longitude;
-  data_pub.publish(out_msg);
-  out_msg.type = "vn_alt";
-  out_msg.data = -in_msg->altitude;
+  out_msg.type = "vn_qj";
+  out_msg.data = odom_msg->pose.pose.orientation.y;
   data_pub.publish(out_msg);
 
-  out_msg.type = "vn_u";  // default to NED unless changed in the vectornav param file
-  out_msg.data = in_msg->nedVelX;
+  out_msg.type = "vn_qk";
+  out_msg.data = odom_msg->pose.pose.orientation.z;
   data_pub.publish(out_msg);
+
+  out_msg.type = "vn_qw";
+  out_msg.data = odom_msg->pose.pose.orientation.w;
+  data_pub.publish(out_msg);
+
+
+  // Publish Position
+  out_msg.type = "vn_x";
+  out_msg.data = odom_msg->pose.pose.position.x;
+  data_pub.publish(out_msg);
+  
+  out_msg.type = "vn_y";
+  out_msg.data = odom_msg->pose.pose.position.y;
+  data_pub.publish(out_msg);
+  
+  out_msg.type = "vn_z";
+  out_msg.data = odom_msg->pose.pose.position.z;
+  data_pub.publish(out_msg);
+
+
+  // Publish Velocities (m/s in body frame)
+  out_msg.type = "vn_u";
+  out_msg.data = odom_msg->twist.twist.linear.x;
+  data_pub.publish(out_msg);
+  
   out_msg.type = "vn_v";
-  out_msg.data = in_msg->nedVelY;
+  out_msg.data = odom_msg->twist.twist.linear.y;
   data_pub.publish(out_msg);
+  
   out_msg.type = "vn_w";
-  out_msg.data = -in_msg->nedVelZ;
+  out_msg.data = odom_msg->twist.twist.linear.z;
+  data_pub.publish(out_msg);
+
+
+  // Publish Angular Rates (deg/s)
+  out_msg.type = "vn_p";
+  out_msg.data = odom_msg->twist.twist.angular.x;
+  data_pub.publish(out_msg);
+  
+  out_msg.type = "vn_q";
+  out_msg.data = odom_msg->twist.twist.angular.y;
+  data_pub.publish(out_msg);
+  
+  out_msg.type = "vn_r";
+  out_msg.data = odom_msg->twist.twist.angular.z;
   data_pub.publish(out_msg);
 
 }
