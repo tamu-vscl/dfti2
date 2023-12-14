@@ -10,9 +10,11 @@ class vectornav_publisher_node
     vectornav_publisher_node();
   private:
     ros::NodeHandle n;
+    ros::Subscriber ins_sub;
     ros::Subscriber odom_sub;
     ros::Publisher data_pub;
 
+    void insCallback(const vectornav::Ins::ConstPtr& ins_msg);
     void odomCallback(const nav_msgs::Odometry::ConstPtr& odom_msg);
 };
 
@@ -27,7 +29,27 @@ int main(int argc, char **argv)
 vectornav_publisher_node::vectornav_publisher_node()
 {
   data_pub = n.advertise<dfti2::dftiData>("dfti_data",1000);
+  ins_sub = n.subscribe("/vectornav/INS",1000,&vectornav_publisher_node::insCallback,this);
   odom_sub = n.subscribe("/vectornav/Odom",1000,&vectornav_publisher_node::odomCallback,this);
+}
+
+void vectornav_publisher_node::insCallback(const vectornav::Ins::ConstPtr& ins_msg)
+{
+  dfti2::dftiData out_msg;
+  out_msg.header = ins_msg->header;
+
+  // Publish INS Attitude Angle (deg) 
+  out_msg.type = "vn_yaw";
+  out_msg.data = ins_msg->yaw;
+  data_pub.publish(out_msg);
+
+  out_msg.type = "vn_pitch";
+  out_msg.data = ins_msg->pitch;
+  data_pub.publish(out_msg);
+
+  out_msg.type = "vn_roll";
+  out_msg.data = ins_msg->roll;
+  data_pub.publish(out_msg);
 }
 
 void vectornav_publisher_node::odomCallback(const nav_msgs::Odometry::ConstPtr& odom_msg)
