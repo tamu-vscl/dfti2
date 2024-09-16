@@ -1,6 +1,7 @@
 #include "ros/ros.h"
 #include "dfti2/dftiData.h"
 #include "nav_msgs/Odometry.h"
+#include "sensor_msgs/Imu.h"
 #include "mavros_msgs/VFR_HUD.h"
 #include "mavros_msgs/RCIn.h"
 #include "mavros_msgs/RCOut.h"
@@ -13,6 +14,7 @@ class pixhawk_publisher_node
   private:
     ros::NodeHandle n;
     ros::Subscriber odom_sub;
+    ros::Subscriber imu_sub;
     ros::Subscriber airspeed_sub;
     ros::Subscriber rcin_sub;
     ros::Subscriber rcout_sub;
@@ -21,6 +23,7 @@ class pixhawk_publisher_node
     std::vector<int> rcout_pins;
 
     void odomCallback(const nav_msgs::Odometry::ConstPtr& in_msg);
+    void imuCallback(const sensor_msgs::Imu::ConstPtr& in_msg);
     void airspeedCallback(const mavros_msgs::VFR_HUD::ConstPtr& in_msg);
     void rcinCallback(const mavros_msgs::RCIn::ConstPtr& in_msg);
     void rcoutCallback(const mavros_msgs::RCOut::ConstPtr& in_msg);
@@ -38,6 +41,7 @@ pixhawk_publisher_node::pixhawk_publisher_node()
 {
   data_pub = n.advertise<dfti2::dftiData>("dfti_data",1000);
   odom_sub = n.subscribe("/mavros/local_position/odom",1000,&pixhawk_publisher_node::odomCallback,this);
+  imu_sub = n.subscribe("/mavros/imu/data",1000,&pixhawk_publisher_node::imuCallback,this);
   airspeed_sub = n.subscribe("/mavros/vfr_hud",1000,&pixhawk_publisher_node::airspeedCallback,this);
   rcin_sub = n.subscribe("/mavros/rc/in",1000,&pixhawk_publisher_node::rcinCallback,this);
   rcout_sub = n.subscribe("/mavros/rc/out",1000,&pixhawk_publisher_node::rcoutCallback,this);
@@ -92,6 +96,22 @@ void pixhawk_publisher_node::odomCallback(const nav_msgs::Odometry::ConstPtr& in
   data_pub.publish(out_msg);
   out_msg.type = "r";
   out_msg.data = -in_msg->twist.twist.angular.z;
+  data_pub.publish(out_msg);
+}
+
+void pixhawk_publisher_node::imuCallback(const sensor_msgs::Imu::ConstPtr& in_msg)
+{
+  dfti2::dftiData out_msg;
+  out_msg.header = in_msg->header;
+  
+  out_msg.type = "u_dot";
+  out_msg.data = in_msg->linear_acceleration.x;
+  data_pub.publish(out_msg);
+  out_msg.type = "v_dot";
+  out_msg.data = in_msg->linear_acceleration.y;
+  data_pub.publish(out_msg);
+  out_msg.type = "w_dot";
+  out_msg.data = in_msg->linear_acceleration.z;
   data_pub.publish(out_msg);
 }
 
