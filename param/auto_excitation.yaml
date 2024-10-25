@@ -9,7 +9,7 @@ amplitude:    [ 45.0, 0.0, 0.0, 43.0, 0.0,   0.0,   0.0,   0.0]  # (% of throw (
 offset:       [1546.0, 1460.0, 1500.0, 1517.0,1500.0,2000.0,1000.0,1000.0]  # (% of throw (PWM value) in decemal form i.e. 0.12 = 12%)
 f0:           [  9.0,   14.0,   0.0,   10.0,   0.0,   0.0,   0.0,   0.0]  # (hz) intial frequency for sine sweep
 f1:           [  0.0,  0.0,   0.0,  0.0,   0.0,   0.0,   0.0,   0.0]  # (hz) final frequency for sine sweep
-k1:           [  3.0,  7.0,   1.0,  5.0,   1.0,   1.0,   1.0,   1.0]  # First sinusoidal component for Schroeder Sweep
+k1:           [  3.0,  7.0,   1.0,  5.0,   1.0,   1.0,   1.0,   1.0]  # First sinusoidal component for Schroeder Sweep,number of cycles for stepwave function
 k2:           [  6.0,  14.0,   2.0,  10.0,   2.0,   2.0,   2.0,   2.0]  # Second sinusoidal component for Schroeder Sweep
 k3:           [  9.0,  21.0,   3.0,  15.0,   3.0,   3.0,   3.0,   3.0]  # Third sinusoidal component for Schroeder Sweep
 k4:           [  12.0, 28.0,   4.0,  20.0,  4.0,   4.0,   4.0,   4.0]  # Fourth sinusoidal component for Schroeder Sweep
