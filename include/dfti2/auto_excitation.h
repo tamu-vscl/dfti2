@@ -18,6 +18,7 @@
 #define SIGNAL_TYPE_A_DOUBLET1 14
 #define SIGNAL_TYPE_A_DOUBLET2 15
 #define SIGNAL_TYPE_A_DOUBLET3 16
+#define SIGNAL_TYPE_STEP_WAVE 17
 
 #define PI 3.14159
 #define IGNORE_CHANNEL 0
@@ -90,6 +91,11 @@ private:
   int trigger_channel_;
   double update_rate_;
   double signal_start_time_;
+
+  int cycles;
+  int c;
+  double amp;
+  double percent_of_cycle;
 
   unsigned int rc_trigger_channel_value;
 };
