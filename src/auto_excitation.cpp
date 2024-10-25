@@ -191,6 +191,33 @@ void AutoExcitation::update_signal(int i)
  // ROS_INFO("Signal Type: %i",signal_[i].type);
   switch(signal_[i].type)
   {
+  case SIGNAL_TYPE_STEP_WAVE:
+    // define new input for
+    cycles = static_cast<int>(signal_[i].k1);
+    
+    // c -> current cycle number
+    c = floor(signal_[i].percent_of_period*cycles); // goes from 0 to cycles - 1;
+
+    // based on linear assumption for cycle - amp is local amp for current step
+    amp = signal_[i].amplitude*(c+1)/cycles; // local amplitude for the cycle
+    
+    // calculates the percentage through a current step cycle
+    percent_of_cycle = signal_[i].percent_of_period*cycles - c; 
+    
+    // Percent ranges
+    if (percent_of_cycle < .125 || (percent_of_cycle > .750 && percent_of_cycle < .875)) {// 0-12.5 or 87.5-75
+        signal_[i].value = signal_[i].offset - amp; // out = -
+    }
+    else if ((percent_of_cycle > .240 && percent_of_cycle < .375) || (percent_of_cycle > .500 && percent_of_cycle < .625)) {// 24 < percent < 37.5 or 50 <percent <62.5
+        signal_[i].value = signal_[i].offset + amp; // out = +
+    }
+    else if (!(percent_of_cycle > 0.0 && percent_of_cycle < 1.0)) {
+        std::cout << "ERROR PERCENT OF CYCLE IS OUT OF RANGE" << std::endl;
+    }
+    else {// else
+        signal_[i].value = signal_[i].offset; // out = 0
+    }
+    break;
   case SIGNAL_TYPE_OFFSET:
     signal_[i].value = signal_[i].offset;
     break;
