@@ -19,6 +19,11 @@ p2:           [  0.250,  0.250,   0.0,  0.250,   0.0,   0.0,   0.0,   0.0]  # Po
 p3:           [  0.250,  0.250,   0.0,  0.250,   0.0,   0.0,   0.0,   0.0]  # Power fraction for third sinusoidal component for Schroeder Sweep
 p4:           [  0.250,  0.250,   0.0,  0.250,   0.0,   0.0,   0.0,   0.0]  # Power fraction for fourth sinusoidal component for Schroeder Sweep
 p5:           [  0.0,  0.0,   0.0,  0.0,   0.0,   0.0,   0.0,   0.0]  # Power fraction for fifth sinusoidal component for Schroeder Sweep
+phi_k1:       [  0.0,  2.876,   0.0,  0.0,   0.0,   0.0,   0.0,   0.0] # Phase Offset angle for first sinuisoidal component of OMSSWP signals
+phi_k2:       [  0.0,  2.921,   0.0,  0.0,   0.0,   0.0,   0.0,   0.0] # Phase Offset angle for second sinuisoidal component of OMSSWP signals
+phi_k3:       [  0.0,  -2.1513,   0.0,  0.0,   0.0,   0.0,   0.0,   0.0] # Phase Offset angle for third sinuisoidal component of OMSSWP signals
+phi_k4:       [  0.0,  2.957,   0.0,  0.0,   0.0,   0.0,   0.0,   0.0] # Phase Offset angle for fourth sinuisoidal component of OMSSWP signals
+phi_k5:       [  0.0,  0.0,   0.0,  0.0,   0.0,   0.0,   0.0,   0.0] # Phase Offset angle for fifth sinuisoidal component of OMSSWP signals
 M:            [  4.0,  4.0,   3.0,  4.0,   3.0,   3.0,   3.0,   3.0]  # Number of Sinsudoidal Componenets for the Schroeder Sweep (Should be either 3.0, 4.0, or 5.0 corresponding to 11,12,13 type)
 delay:        [   1.0,   0.0,   0.0,  1.0,   0.0,   0.0,   0.0,   0.0]  # (s) amount of time between intitating the disturbance and this channels signal start. Allows for offset signals.
 length:       [   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0,   1.0]  # (Number of periods)
