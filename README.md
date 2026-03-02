@@ -1,4 +1,6 @@
 # DFTI2
+If using VN use the VN_Implementation branch. 
+in your dfti2_ws/src folder copy this repo: https://github.com/dawonn/vectornav
 
 *Note that this documentation is very rough. It's late and I'm not going to proof read it*
 
